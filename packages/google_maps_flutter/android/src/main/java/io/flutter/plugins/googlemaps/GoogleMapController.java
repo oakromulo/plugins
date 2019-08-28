@@ -60,6 +60,7 @@ final class GoogleMapController
         OnMapReadyCallback,
         GoogleMap.OnMapClickListener,
         GoogleMap.OnMapLongClickListener,
+        GoogleMap.OnMarkerDragListener,
         PlatformView {
 
   private static final String TAG = "GoogleMapController";
@@ -72,6 +73,8 @@ final class GoogleMapController
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
   private boolean myLocationButtonEnabled = false;
+  private boolean indoorEnabled = true;
+  private boolean trafficEnabled = false;
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
@@ -104,7 +107,7 @@ final class GoogleMapController
     this.registrarActivityHashCode = registrar.activity().hashCode();
     this.markersController = new MarkersController(methodChannel);
     this.polygonsController = new PolygonsController(methodChannel);
-    this.polylinesController = new PolylinesController(methodChannel);
+    this.polylinesController = new PolylinesController(methodChannel, density);
     this.circlesController = new CirclesController(methodChannel);
   }
 
@@ -166,6 +169,8 @@ final class GoogleMapController
   @Override
   public void onMapReady(GoogleMap googleMap) {
     this.googleMap = googleMap;
+    this.googleMap.setIndoorEnabled(this.indoorEnabled);
+    this.googleMap.setTrafficEnabled(this.trafficEnabled);
     googleMap.setOnInfoWindowClickListener(this);
     if (mapReadyResult != null) {
       mapReadyResult.success(null);
@@ -175,6 +180,7 @@ final class GoogleMapController
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
+    googleMap.setOnMarkerDragListener(this);
     googleMap.setOnPolygonClickListener(this);
     googleMap.setOnPolylineClickListener(this);
     googleMap.setOnCircleClickListener(this);
@@ -285,6 +291,11 @@ final class GoogleMapController
           result.success(googleMap.getUiSettings().isCompassEnabled());
           break;
         }
+      case "map#isMapToolbarEnabled":
+        {
+          result.success(googleMap.getUiSettings().isMapToolbarEnabled());
+          break;
+        }
       case "map#getMinMaxZoomLevels":
         {
           List<Float> zoomLevels = new ArrayList<>(2);
@@ -316,6 +327,11 @@ final class GoogleMapController
       case "map#isMyLocationButtonEnabled":
         {
           result.success(googleMap.getUiSettings().isMyLocationButtonEnabled());
+          break;
+        }
+      case "map#isTrafficEnabled":
+        {
+          result.success(googleMap.isTrafficEnabled());
           break;
         }
       case "map#setStyle":
@@ -386,6 +402,17 @@ final class GoogleMapController
   @Override
   public boolean onMarkerClick(Marker marker) {
     return markersController.onMarkerTap(marker.getId());
+  }
+
+  @Override
+  public void onMarkerDragStart(Marker marker) {}
+
+  @Override
+  public void onMarkerDrag(Marker marker) {}
+
+  @Override
+  public void onMarkerDragEnd(Marker marker) {
+    markersController.onMarkerDragEnd(marker.getId(), marker.getPosition());
   }
 
   @Override
@@ -483,6 +510,11 @@ final class GoogleMapController
   }
 
   @Override
+  public void setMapToolbarEnabled(boolean mapToolbarEnabled) {
+    googleMap.getUiSettings().setMapToolbarEnabled(mapToolbarEnabled);
+  }
+
+  @Override
   public void setMapType(int mapType) {
     googleMap.setMapType(mapType);
   }
@@ -515,6 +547,17 @@ final class GoogleMapController
     }
     if (max != null) {
       googleMap.setMaxZoomPreference(max);
+    }
+  }
+
+  @Override
+  public void setPadding(float top, float left, float bottom, float right) {
+    if (googleMap != null) {
+      googleMap.setPadding(
+          (int) (left * density),
+          (int) (top * density),
+          (int) (right * density),
+          (int) (bottom * density));
     }
   }
 
@@ -623,5 +666,13 @@ final class GoogleMapController
     }
     return context.checkPermission(
         permission, android.os.Process.myPid(), android.os.Process.myUid());
+  }
+
+  public void setIndoorEnabled(boolean indoorEnabled) {
+    this.indoorEnabled = indoorEnabled;
+  }
+
+  public void setTrafficEnabled(boolean trafficEnabled) {
+    this.trafficEnabled = trafficEnabled;
   }
 }

@@ -1,10 +1,22 @@
 ## 0.10.2
 
-* iOS: Revert the changes made in version `0.10.1` that made live streams not able to initialize due to the lack of duration.
+* **Android Only** Adds optional VideoFormat used to signal what format the plugin should try.
+
+## 0.10.1+7
+
+* Fix tests by ignoring deprecated member use.
+
+## 0.10.1+6
+
+* [iOS] Fixed a memory leak with notification observing.
+
+## 0.10.1+5
+
+* Fix race condition while disposing the VideoController.
 
 ## 0.10.1+4
 
-* Fix race condition while disposing the VideoController.
+* Fixed syntax error in README.md.
 
 ## 0.10.1+3
 
