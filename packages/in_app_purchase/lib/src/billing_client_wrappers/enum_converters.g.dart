@@ -15,31 +15,23 @@ _SerializedEnums _$_SerializedEnumsFromJson(Map json) {
 Map<String, dynamic> _$_SerializedEnumsToJson(_SerializedEnums instance) =>
     <String, dynamic>{
       'response': _$BillingResponseEnumMap[instance.response],
-      'type': _$SkuTypeEnumMap[instance.type],
+      'type': _$SkuTypeEnumMap[instance.type]
     };
 
-T _$enumDecode<T>(
-  Map<T, dynamic> enumValues,
-  dynamic source, {
-  T unknownValue,
-}) {
+T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
   if (source == null) {
     throw ArgumentError('A value must be provided. Supported values: '
         '${enumValues.values.join(', ')}');
   }
-
-  final value = enumValues.entries
-      .singleWhere((e) => e.value == source, orElse: () => null)
-      ?.key;
-
-  if (value == null && unknownValue == null) {
-    throw ArgumentError('`$source` is not one of the supported values: '
-        '${enumValues.values.join(', ')}');
-  }
-  return value ?? unknownValue;
+  return enumValues.entries
+      .singleWhere((e) => e.value == source,
+          orElse: () => throw ArgumentError(
+              '`$source` is not one of the supported values: '
+              '${enumValues.values.join(', ')}'))
+      .key;
 }
 
-const _$BillingResponseEnumMap = {
+const _$BillingResponseEnumMap = <BillingResponse, dynamic>{
   BillingResponse.featureNotSupported: -2,
   BillingResponse.serviceDisconnected: -1,
   BillingResponse.ok: 0,
@@ -50,10 +42,10 @@ const _$BillingResponseEnumMap = {
   BillingResponse.developerError: 5,
   BillingResponse.error: 6,
   BillingResponse.itemAlreadyOwned: 7,
-  BillingResponse.itemNotOwned: 8,
+  BillingResponse.itemNotOwned: 8
 };
 
-const _$SkuTypeEnumMap = {
+const _$SkuTypeEnumMap = <SkuType, dynamic>{
   SkuType.inapp: 'inapp',
-  SkuType.subs: 'subs',
+  SkuType.subs: 'subs'
 };

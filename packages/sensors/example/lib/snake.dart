@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// ignore_for_file: public_member_api_docs
-
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -63,8 +61,6 @@ class SnakeState extends State<Snake> {
   double cellSize;
   GameState state;
   AccelerometerEvent acceleration;
-  StreamSubscription<AccelerometerEvent> _streamSubscription;
-  Timer _timer;
 
   @override
   Widget build(BuildContext context) {
@@ -72,23 +68,15 @@ class SnakeState extends State<Snake> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    _streamSubscription.cancel();
-    _timer.cancel();
-  }
-
-  @override
   void initState() {
     super.initState();
-    _streamSubscription =
-        accelerometerEvents.listen((AccelerometerEvent event) {
+    accelerometerEvents.listen((AccelerometerEvent event) {
       setState(() {
         acceleration = event;
       });
     });
 
-    _timer = Timer.periodic(const Duration(milliseconds: 200), (_) {
+    Timer.periodic(const Duration(milliseconds: 200), (_) {
       setState(() {
         _step();
       });

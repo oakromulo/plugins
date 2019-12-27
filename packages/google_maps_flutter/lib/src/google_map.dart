@@ -4,10 +4,6 @@
 
 part of google_maps_flutter;
 
-/// Callback method for when the map is ready to be used.
-///
-/// Pass to [GoogleMap.onMapCreated] to receive a [GoogleMapController] when the
-/// map is created.
 typedef void MapCreatedCallback(GoogleMapController controller);
 
 /// Callback that receives updates to the camera position.
@@ -18,11 +14,7 @@ typedef void MapCreatedCallback(GoogleMapController controller);
 /// This is used in [GoogleMap.onCameraMove].
 typedef void CameraPositionCallback(CameraPosition position);
 
-/// A widget which displays a map with data obtained from the Google Maps service.
 class GoogleMap extends StatefulWidget {
-  /// Creates a widget displaying data from Google Maps services.
-  ///
-  /// [AssertionError] will be thrown if [initialCameraPosition] is null;
   const GoogleMap({
     Key key,
     @required this.initialCameraPosition,
@@ -44,7 +36,6 @@ class GoogleMap extends StatefulWidget {
     this.padding = const EdgeInsets.all(0),
     this.indoorViewEnabled = false,
     this.trafficEnabled = false,
-    this.buildingsEnabled = true,
     this.markers,
     this.polygons,
     this.polylines,
@@ -57,9 +48,6 @@ class GoogleMap extends StatefulWidget {
   })  : assert(initialCameraPosition != null),
         super(key: key);
 
-  /// Callback method for when the map is ready to be used.
-  ///
-  /// Used to receive a [GoogleMapController] for this [GoogleMap].
   final MapCreatedCallback onMapCreated;
 
   /// The initial position of the map's camera.
@@ -180,9 +168,6 @@ class GoogleMap extends StatefulWidget {
   /// Enables or disables the traffic layer of the map
   final bool trafficEnabled;
 
-  /// Enables or disables showing 3D buildings where available
-  final bool buildingsEnabled;
-
   /// Which gestures should be consumed by the map.
   ///
   /// It is possible for other gesture recognizers to be competing with the map on pointer
@@ -194,7 +179,6 @@ class GoogleMap extends StatefulWidget {
   /// were not claimed by any other gesture recognizer.
   final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
 
-  /// Creates a [State] for this [GoogleMap].
   @override
   State createState() => _GoogleMapState();
 }
@@ -269,14 +253,12 @@ class _GoogleMapState extends State<GoogleMap> {
       return;
     }
     final GoogleMapController controller = await _controller.future;
-    // ignore: unawaited_futures
     controller._updateMapOptions(updates);
     _googleMapOptions = newOptions;
   }
 
   void _updateMarkers() async {
     final GoogleMapController controller = await _controller.future;
-    // ignore: unawaited_futures
     controller._updateMarkers(
         _MarkerUpdates.from(_markers.values.toSet(), widget.markers));
     _markers = _keyByMarkerId(widget.markers);
@@ -284,7 +266,6 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void _updatePolygons() async {
     final GoogleMapController controller = await _controller.future;
-    // ignore: unawaited_futures
     controller._updatePolygons(
         _PolygonUpdates.from(_polygons.values.toSet(), widget.polygons));
     _polygons = _keyByPolygonId(widget.polygons);
@@ -292,7 +273,6 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void _updatePolylines() async {
     final GoogleMapController controller = await _controller.future;
-    // ignore: unawaited_futures
     controller._updatePolylines(
         _PolylineUpdates.from(_polylines.values.toSet(), widget.polylines));
     _polylines = _keyByPolylineId(widget.polylines);
@@ -300,7 +280,6 @@ class _GoogleMapState extends State<GoogleMap> {
 
   void _updateCircles() async {
     final GoogleMapController controller = await _controller.future;
-    // ignore: unawaited_futures
     controller._updateCircles(
         _CircleUpdates.from(_circles.values.toSet(), widget.circles));
     _circles = _keyByCircleId(widget.circles);
@@ -398,7 +377,6 @@ class _GoogleMapOptions {
     this.padding,
     this.indoorViewEnabled,
     this.trafficEnabled,
-    this.buildingsEnabled,
   });
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
@@ -418,7 +396,6 @@ class _GoogleMapOptions {
       padding: map.padding,
       indoorViewEnabled: map.indoorViewEnabled,
       trafficEnabled: map.trafficEnabled,
-      buildingsEnabled: map.buildingsEnabled,
     );
   }
 
@@ -452,8 +429,6 @@ class _GoogleMapOptions {
 
   final bool trafficEnabled;
 
-  final bool buildingsEnabled;
-
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
 
@@ -483,7 +458,6 @@ class _GoogleMapOptions {
     ]);
     addIfNonNull('indoorEnabled', indoorViewEnabled);
     addIfNonNull('trafficEnabled', trafficEnabled);
-    addIfNonNull('buildingsEnabled', buildingsEnabled);
     return optionsMap;
   }
 

@@ -45,7 +45,6 @@ const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault = FLTImagePickerMIME
   CGImageSourceRef source = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
   NSDictionary *metadata =
       (NSDictionary *)CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source, 0, NULL));
-  CFRelease(source);
   return metadata;
 }
 
@@ -72,14 +71,14 @@ const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault = FLTImagePickerMIME
 
   switch (type) {
     case FLTImagePickerMIMETypeJPEG: {
-      CGFloat qualityFloat = (quality != nil) ? quality.floatValue : 1;
+      CGFloat qualityFloat = quality ? quality.floatValue : 1;
       return UIImageJPEGRepresentation(image, qualityFloat);
     }
     case FLTImagePickerMIMETypePNG:
       return UIImagePNGRepresentation(image);
     default: {
       // converts to JPEG by default.
-      CGFloat qualityFloat = (quality != nil) ? quality.floatValue : 1;
+      CGFloat qualityFloat = quality ? quality.floatValue : 1;
       return UIImageJPEGRepresentation(image, qualityFloat);
     }
   }

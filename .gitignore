@@ -22,7 +22,6 @@ Pods/
 ServiceDefinitions.json
 xcuserdata/
 *.xcworkspace
-**/DerivedData/
 
 local.properties
 keystore.properties
@@ -30,7 +29,6 @@ keystore.properties
 gradlew
 gradlew.bat
 gradle-wrapper.jar
-.flutter-plugins-dependencies
 *.iml
 
 GeneratedPluginRegistrant.h

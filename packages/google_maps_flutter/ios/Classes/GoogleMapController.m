@@ -8,9 +8,7 @@
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
 static NSDictionary* PositionToJson(GMSCameraPosition* position);
-static NSDictionary* PointToJson(CGPoint point);
 static NSArray* LocationToJson(CLLocationCoordinate2D position);
-static CGPoint ToCGPoint(NSDictionary* json);
 static GMSCameraPosition* ToOptionalCameraPosition(NSDictionary* json);
 static GMSCoordinateBounds* ToOptionalBounds(NSArray* json);
 static GMSCameraUpdate* ToCameraUpdate(NSArray* data);
@@ -65,7 +63,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
                     registrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  if (self = [super init]) {
+  if ([super init]) {
     _viewId = viewId;
 
     GMSCameraPosition* camera = ToOptionalCameraPosition(args[@"initialCameraPosition"]);
@@ -147,26 +145,6 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     } else {
       result([FlutterError errorWithCode:@"GoogleMap uninitialized"
                                  message:@"getVisibleRegion called prior to map initialization"
-                                 details:nil]);
-    }
-  } else if ([call.method isEqualToString:@"map#getScreenCoordinate"]) {
-    if (_mapView != nil) {
-      CLLocationCoordinate2D location = [FLTGoogleMapJsonConversions toLocation:call.arguments];
-      CGPoint point = [_mapView.projection pointForCoordinate:location];
-      result(PointToJson(point));
-    } else {
-      result([FlutterError errorWithCode:@"GoogleMap uninitialized"
-                                 message:@"getScreenCoordinate called prior to map initialization"
-                                 details:nil]);
-    }
-  } else if ([call.method isEqualToString:@"map#getLatLng"]) {
-    if (_mapView != nil && call.arguments) {
-      CGPoint point = ToCGPoint(call.arguments);
-      CLLocationCoordinate2D latlng = [_mapView.projection coordinateForPoint:point];
-      result(LocationToJson(latlng));
-    } else {
-      result([FlutterError errorWithCode:@"GoogleMap uninitialized"
-                                 message:@"getLatLng called prior to map initialization"
                                  details:nil]);
     }
   } else if ([call.method isEqualToString:@"map#waitForMap"]) {
@@ -254,9 +232,6 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   } else if ([call.method isEqualToString:@"map#isTrafficEnabled"]) {
     NSNumber* isTrafficEnabled = @(_mapView.trafficEnabled);
     result(isTrafficEnabled);
-  } else if ([call.method isEqualToString:@"map#isBuildingsEnabled"]) {
-    NSNumber* isBuildingsEnabled = @(_mapView.buildingsEnabled);
-    result(isBuildingsEnabled);
   } else if ([call.method isEqualToString:@"map#setStyle"]) {
     NSString* mapStyle = [call arguments];
     NSString* error = [self setMapStyle:mapStyle];
@@ -318,10 +293,6 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   _mapView.trafficEnabled = enabled;
 }
 
-- (void)setBuildingsEnabled:(BOOL)enabled {
-  _mapView.buildingsEnabled = enabled;
-}
-
 - (void)setMapType:(GMSMapViewType)mapType {
   _mapView.mapType = mapType;
 }
@@ -356,6 +327,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 
 - (void)setMyLocationEnabled:(BOOL)enabled {
   _mapView.myLocationEnabled = enabled;
+  _mapView.settings.myLocationButton = enabled;
 }
 
 - (void)setMyLocationButtonEnabled:(BOOL)enabled {
@@ -456,13 +428,6 @@ static NSDictionary* PositionToJson(GMSCameraPosition* position) {
   };
 }
 
-static NSDictionary* PointToJson(CGPoint point) {
-  return @{
-    @"x" : @((int)point.x),
-    @"y" : @((int)point.y),
-  };
-}
-
 static NSDictionary* GMSCoordinateBoundsToJson(GMSCoordinateBounds* bounds) {
   if (!bounds) {
     return nil;
@@ -494,12 +459,6 @@ static GMSCameraPosition* ToCameraPosition(NSDictionary* data) {
 
 static GMSCameraPosition* ToOptionalCameraPosition(NSDictionary* json) {
   return json ? ToCameraPosition(json) : nil;
-}
-
-static CGPoint ToCGPoint(NSDictionary* json) {
-  double x = ToDouble(json[@"x"]);
-  double y = ToDouble(json[@"y"]);
-  return CGPointMake(x, y);
 }
 
 static GMSCoordinateBounds* ToBounds(NSArray* data) {
@@ -550,7 +509,7 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
     [sink setCameraTargetBounds:ToOptionalBounds(cameraTargetBounds)];
   }
   NSNumber* compassEnabled = data[@"compassEnabled"];
-  if (compassEnabled != nil) {
+  if (compassEnabled) {
     [sink setCompassEnabled:ToBool(compassEnabled)];
   }
   id indoorEnabled = data[@"indoorEnabled"];
@@ -560,10 +519,6 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
   id trafficEnabled = data[@"trafficEnabled"];
   if (trafficEnabled) {
     [sink setTrafficEnabled:ToBool(trafficEnabled)];
-  }
-  id buildingsEnabled = data[@"buildingsEnabled"];
-  if (buildingsEnabled) {
-    [sink setBuildingsEnabled:ToBool(buildingsEnabled)];
   }
   id mapType = data[@"mapType"];
   if (mapType) {
@@ -585,31 +540,31 @@ static void InterpretMapOptions(NSDictionary* data, id<FLTGoogleMapOptionsSink> 
   }
 
   NSNumber* rotateGesturesEnabled = data[@"rotateGesturesEnabled"];
-  if (rotateGesturesEnabled != nil) {
+  if (rotateGesturesEnabled) {
     [sink setRotateGesturesEnabled:ToBool(rotateGesturesEnabled)];
   }
   NSNumber* scrollGesturesEnabled = data[@"scrollGesturesEnabled"];
-  if (scrollGesturesEnabled != nil) {
+  if (scrollGesturesEnabled) {
     [sink setScrollGesturesEnabled:ToBool(scrollGesturesEnabled)];
   }
   NSNumber* tiltGesturesEnabled = data[@"tiltGesturesEnabled"];
-  if (tiltGesturesEnabled != nil) {
+  if (tiltGesturesEnabled) {
     [sink setTiltGesturesEnabled:ToBool(tiltGesturesEnabled)];
   }
   NSNumber* trackCameraPosition = data[@"trackCameraPosition"];
-  if (trackCameraPosition != nil) {
+  if (trackCameraPosition) {
     [sink setTrackCameraPosition:ToBool(trackCameraPosition)];
   }
   NSNumber* zoomGesturesEnabled = data[@"zoomGesturesEnabled"];
-  if (zoomGesturesEnabled != nil) {
+  if (zoomGesturesEnabled) {
     [sink setZoomGesturesEnabled:ToBool(zoomGesturesEnabled)];
   }
   NSNumber* myLocationEnabled = data[@"myLocationEnabled"];
-  if (myLocationEnabled != nil) {
+  if (myLocationEnabled) {
     [sink setMyLocationEnabled:ToBool(myLocationEnabled)];
   }
   NSNumber* myLocationButtonEnabled = data[@"myLocationButtonEnabled"];
-  if (myLocationButtonEnabled != nil) {
+  if (myLocationButtonEnabled) {
     [sink setMyLocationButtonEnabled:ToBool(myLocationButtonEnabled)];
   }
 }

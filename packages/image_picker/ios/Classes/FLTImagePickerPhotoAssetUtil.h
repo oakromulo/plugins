@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Save image with correct meta data and extention copied from image picker result info.
 + (NSString *)saveImageWithPickerInfo:(nullable NSDictionary *)info
                                 image:(UIImage *)image
-                         imageQuality:(nullable NSNumber *)imageQuality;
+                         imageQuality:(NSNumber *)imageQuality;
 
 @end
 

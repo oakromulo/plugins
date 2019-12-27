@@ -9,9 +9,6 @@ part of google_maps_flutter;
 /// This does not have to be globally unique, only unique among the list.
 @immutable
 class PolylineId {
-  /// Creates an immutable object representing a [PolylineId] among [GoogleMap] polylines.
-  ///
-  /// An [AssertionError] will be thrown if [value] is null.
   PolylineId(this.value) : assert(value != null);
 
   /// value of the [PolylineId].
@@ -37,7 +34,6 @@ class PolylineId {
 /// Draws a line through geographical locations on the map.
 @immutable
 class Polyline {
-  /// Creates an immutable object representing a line drawn through geographical locations on the map.
   const Polyline({
     @required this.polylineId,
     this.consumeTapEvents = false,
@@ -160,15 +156,6 @@ class Polyline {
     );
   }
 
-  /// Creates a new [Polyline] object whose values are the same as this
-  /// instance.
-  Polyline clone() {
-    return copyWith(
-      patternsParam: List<PatternItem>.of(patterns),
-      pointsParam: List<LatLng>.of(points),
-    );
-  }
-
   dynamic _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
 
@@ -247,8 +234,8 @@ Map<PolylineId, Polyline> _keyByPolylineId(Iterable<Polyline> polylines) {
     return <PolylineId, Polyline>{};
   }
   return Map<PolylineId, Polyline>.fromEntries(polylines.map(
-      (Polyline polyline) => MapEntry<PolylineId, Polyline>(
-          polyline.polylineId, polyline.clone())));
+      (Polyline polyline) =>
+          MapEntry<PolylineId, Polyline>(polyline.polylineId, polyline)));
 }
 
 List<Map<String, dynamic>> _serializePolylineSet(Set<Polyline> polylines) {

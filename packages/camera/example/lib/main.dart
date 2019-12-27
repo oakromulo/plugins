@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// ignore_for_file: public_member_api_docs
-
 import 'dart:async';
 import 'dart:io';
 
@@ -395,7 +393,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       await controller.pauseVideoRecording();
     } on CameraException catch (e) {
       _showCameraException(e);
-      rethrow;
+      return null;
     }
   }
 
@@ -408,7 +406,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       await controller.resumeVideoRecording();
     } on CameraException catch (e) {
       _showCameraException(e);
-      rethrow;
+      return null;
     }
   }
 
@@ -474,12 +472,11 @@ class CameraApp extends StatelessWidget {
   }
 }
 
-List<CameraDescription> cameras = [];
+List<CameraDescription> cameras;
 
 Future<void> main() async {
   // Fetch the available cameras before initializing the app.
   try {
-    WidgetsFlutterBinding.ensureInitialized();
     cameras = await availableCameras();
   } on CameraException catch (e) {
     logError(e.code, e.description);

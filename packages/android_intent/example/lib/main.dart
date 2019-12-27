@@ -11,7 +11,6 @@ void main() {
   runApp(MyApp());
 }
 
-/// A sample app for launching intents.
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -30,7 +29,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-/// Holds the different intent widgets.
 class MyHomePage extends StatelessWidget {
   void _createAlarm() {
     final AndroidIntent intent = const AndroidIntent(
@@ -82,11 +80,9 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-/// Launches intents to specific Android activities.
 class ExplicitIntentsWidget extends StatelessWidget {
-  const ExplicitIntentsWidget(); // ignore: public_member_api_docs
+  const ExplicitIntentsWidget();
 
-  // ignore: public_member_api_docs
   static const String routeName = "/explicitIntents";
 
   void _openGoogleMapsStreetView() {
@@ -146,14 +142,6 @@ class ExplicitIntentsWidget extends StatelessWidget {
     intent.launch();
   }
 
-  void _openApplicationDetails() {
-    final AndroidIntent intent = const AndroidIntent(
-      action: 'action_application_details_settings',
-      data: 'package:io.flutter.plugins.androidintentexample',
-    );
-    intent.launch();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -198,12 +186,6 @@ class ExplicitIntentsWidget extends StatelessWidget {
                   'Tap here to open Location Settings Configuration',
                 ),
                 onPressed: _openLocationSettingsConfiguration,
-              ),
-              RaisedButton(
-                child: const Text(
-                  'Tap here to open Application Details',
-                ),
-                onPressed: _openApplicationDetails,
               )
             ],
           ),

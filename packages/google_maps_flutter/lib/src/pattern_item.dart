@@ -9,7 +9,6 @@ part of google_maps_flutter;
 class PatternItem {
   const PatternItem._(this._json);
 
-  /// A dot used in the stroke pattern for a [Polyline].
   static const PatternItem dot = PatternItem._(<dynamic>['dot']);
 
   /// A dash used in the stroke pattern for a [Polyline].

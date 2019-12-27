@@ -23,7 +23,7 @@ extern const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault;
 + (FLTImagePickerMIMEType)getImageMIMETypeFromImageData:(NSData *)imageData;
 
 // Get corresponding surfix from type.
-+ (nullable NSString *)imageTypeSuffixFromType:(FLTImagePickerMIMEType)type;
++ (NSString *)imageTypeSuffixFromType:(FLTImagePickerMIMEType)type;
 
 + (NSDictionary *)getMetaDataFromImageData:(NSData *)imageData;
 

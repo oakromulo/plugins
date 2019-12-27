@@ -48,7 +48,7 @@
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
               binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
-  if (self = [super init]) {
+  if ([super init]) {
     _viewId = viewId;
 
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
@@ -118,8 +118,6 @@
     [self onRemoveJavaScriptChannels:call result:result];
   } else if ([[call method] isEqualToString:@"clearCache"]) {
     [self clearCache:result];
-  } else if ([[call method] isEqualToString:@"getTitle"]) {
-    [self onGetTitle:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -240,11 +238,6 @@
   }
 }
 
-- (void)onGetTitle:(FlutterResult)result {
-  NSString* title = _webView.title;
-  result(title);
-}
-
 // Returns nil when successful, or an error message when one or more keys are unknown.
 - (NSString*)applySettings:(NSDictionary<NSString*, id>*)settings {
   NSMutableArray<NSString*>* unknownKeys = [[NSMutableArray alloc] init];
@@ -257,10 +250,6 @@
       _navigationDelegate.hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
     } else if ([key isEqualToString:@"debuggingEnabled"]) {
       // no-op debugging is always enabled on iOS.
-    } else if ([key isEqualToString:@"gestureNavigationEnabled"]) {
-      NSNumber* allowsBackForwardNavigationGestures = settings[key];
-      _webView.allowsBackForwardNavigationGestures =
-          [allowsBackForwardNavigationGestures boolValue];
     } else if ([key isEqualToString:@"userAgent"]) {
       NSString* userAgent = settings[key];
       [self updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
